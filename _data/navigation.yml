@@ -1,0 +1,9 @@
+# Edit tags from here
+# main links
+
+main:
+  - title: "Malware analysis"
+    url: /categories/#Malware-analysis
+  - title: "Mal Documents"
+    url: /categories/#Mal-Document
+  # url: https://google.com
