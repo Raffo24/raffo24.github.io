@@ -6,7 +6,7 @@ header:
   teaser: /assets/images/blog/hw1/hw1.jpg
 ribbon: MidnightBlue
 categories:
-  - whoami
+  - hw1
 toc: true
 ---
 
