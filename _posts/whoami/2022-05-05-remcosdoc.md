@@ -5,7 +5,7 @@ header:
   teaser: /assets/images/MA/remcosdoc/remdoc.jpg
 ribbon: MidnightBlue
 categories:
-  - whoami
+  - statistics
 toc: true
 ---
 
