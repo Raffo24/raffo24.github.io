@@ -1,7 +1,7 @@
 ---
 title: Homework 1
 classes: wide
-date: 2024-03-17 23:26:00 +0800
+date: 2024-10-06 01:17:00 +0800
 header:
   teaser: /assets/images/blog/hw1/hw1.jpg
 ribbon: MidnightBlue
