@@ -5,5 +5,5 @@ main:
   - title: "Categories"
     url: /categories
   - title: "Who am I"
-    url: /whoami
+    url: /bio/whoami
   # url: https://google.com
