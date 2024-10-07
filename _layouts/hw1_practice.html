@@ -65,298 +65,293 @@
 </head>
 
 <body>
-    <h1>Hackers vs Servers</h1>
-    <div class="container" id="container">
-        <form id="simulationForm" onsubmit="return false;">
-            <label for="n">Number of Servers:</label>
-            <input type="number" id="n" value="10" min="2" max="500" required><br><br>
-            <label for="m">Number of Hackers:</label>
-            <input type="number" id="m" value="5" min="1" max="500" required><br><br>
-            <label for="p">Breach Probability :</label>
-            <input type="number" id="p" value="0.5" step="0.01" min="0" max="1" required><br><br>
-            <button id="button" onclick="generateGraphs()">Generate Graphs</button>
-        </form>
-        <div id="charts" style="display: none;">
-            <div class="graph">
-                <h2>Flat Line Graph</h2>
-                <canvas id="flat-line-graph"></canvas>
-            </div>
-            <div class="graph">
-                <h2>Frequency Distribution</h2>
-                <canvas id="histogram"></canvas>
-            </div>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-        <script>
-
-            let flatLineChart = null;
-            let histogramChart = null;
-
-            function generateRandomColor() {
-                let colore = '#';
-                for (let i = 0; i < 6; i++) {
-                    colore += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
-                }
-                return colore;
-            }
-
-            function plotFlatLineChart(servers, hackers, breachDatasets) {
-                if (flatLineChart !== null) {
-                    flatLineChart.destroy();
-                }
-                const ctx = document.getElementById('flat-line-graph').getContext('2d');
-
-                flatLineChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: servers,
-                        datasets: breachDatasets.map(dataset => ({
-                            ...dataset,
-                            pointRadius: 0,
-                        })),
-                    },
-                    options: {
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                animation: false,
-                                enabled: true,
-                                callbacks: {
-                                    label: function (context) {
-                                        const label = context.dataset.label || '';
-                                        return label + ' ==> breached servers: ' + context.raw;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Servers',
-                                    font: {
-                                        size: 18,
-                                    },
-                                },
-                                min: -1,
-                                position: 'bottom'
-                            },
-                            y: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Breached Servers',
-                                    font: {
-                                        size: 18,
-                                    },
-                                },
-                                min: 0,
-                                max: servers.length,
-                                ticks: {
-                                    stepSize: 1,
-                                }
-                            }
-                        },
-                        maintainAspectRatio: false
-                    }
-                });
-            }
-
-            function plotHistogram(servers, penetrationCounts) {
-                if (histogramChart !== null) {
-                    histogramChart.destroy();
-                }
-
-                const secondCtx = document.getElementById('histogram').getContext('2d');
-
-                histogramChart = new Chart(secondCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: servers,
-                        datasets: [{
-                            label: "Number of hackers for each interval of breached servers",
-                            backgroundColor: generateRandomColor(),
-                            borderWidth: 2,
-                            data: penetrationCounts,
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            x: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Breach Success distribution',
-                                    font: {
-                                        size: 18,
-                                    },
-                                },
-                                position: 'bottom'
-                            },
-                            y: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Hackers',
-                                    font: {
-                                        size: 18,
-                                    },
-                                },
-                                min: 0,
-                                ticks: {
-                                    stepSize: 1,
-                                }
-                            }
-                        },
-                        maintainAspectRatio: false
-                    }
-                });
-            }
-
-            function getDataset(hackers, servers, p) {
-                let dataset = [];
-
-                for (let i = 1; i <= hackers; i++) {
-                    let hackerInfo = [];
-                    let top = 0;
-
-                    for (let j = 0; j < servers; j++) {
-
-                        let x = top;
-
-                        if (p > Math.random()) { x = ++top; }
-
-                        hackerInfo.push(x);
-                    }
-
-                    dataset.push({
-                        data: hackerInfo,
-                        label: `Hacker ${i}`,
-                        borderColor: generateRandomColor(),
-                    });
-                }
-
-                return dataset;
-            }
-
-            function generateGraphs() {
-                const n_servers = parseInt(document.getElementById('n').value);
-                const n_hackers = parseInt(document.getElementById('m').value);
-                const p = parseFloat(document.getElementById('p').value);
-
-                // Validate input
-                if (n_servers < 2 || n_servers > 500 || n_hackers < 1 || n_hackers > 500 || p < 0 || p > 1) {
-                    alert('Please enter values in these intervals:\n- 2-500 for servers\n- 1-500 for hackers\n- 0-1 for probability.');
-                    return;
-                }
-
-                const servers = [];
-                for (let i = 1; i <= n_servers; i++) { servers.push(i); }
-
-                const hackers = [];
-                for (let i = 1; i <= n_hackers; i++) { hackers.push(i); }
-
-                const breachDatasets = getDataset(hackers.length, servers.length, p);
-
-                const maxSuccesses = Math.max(...breachDatasets.flatMap(dataset => dataset.data));
-
-                let intervalCount = 5;
-                if (maxSuccesses >= 20) {
-                    intervalCount = 15;
-                } else if (maxSuccesses >= 50) {
-                    intervalCount = 30;
-                } else if (maxSuccesses >= 100) {
-                    intervalCount = 87;
-                } else if (maxSuccesses >= 200) {
-                    intervalCount = 170;
-                } else if (maxSuccesses >= 300) {
-                    intervalCount = 270;
-                } else if (maxSuccesses >= 400) {
-                    intervalCount = 390;
-                }
-
-                const intervalSize = Math.ceil(maxSuccesses / intervalCount);
-                const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
-
-                const distributionCounts = Array(intervalCount).fill(0);
-                breachDatasets.forEach(dataset => {
-                    const index = Math.floor(dataset.data.at(-1) / intervalSize);
-                    if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
-                });
-
-                while (distributionCounts[0] === 0) {
-                    distributionCounts.shift();
-                    intervals.shift();
-                }
-
-                plotFlatLineChart(servers, hackers, breachDatasets);
-                plotHistogram(intervals, distributionCounts);
-
-                document.getElementById('charts').style.display = 'flex';
-            }
-
-        </script>
-    </div>
-
     <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
-    {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
-    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
-    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
-    {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+        {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+        {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+        {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+        {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+    
+        <div class="page__inner-wrap">
+            {% unless page.header.overlay_color or page.header.overlay_image %}
+            <header>
+                {% if page.title %}<h1 id="page-title" class="page__title" itemprop="headline">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</h1>{% endif %}
+                {% if page.read_time %}
+                <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> {% include read-time.html %}</p>
+                {% endif %}
+            </header>
+            {% endunless %}
+            <div class="container" id="container">
+                <form id="simulationForm" onsubmit="return false;">
+                    <label for="n">Number of Servers:</label>
+                    <input type="number" id="n" value="10" min="2" max="500" required><br><br>
+                    <label for="m">Number of Hackers:</label>
+                    <input type="number" id="m" value="5" min="1" max="500" required><br><br>
+                    <label for="p">Breach Probability :</label>
+                    <input type="number" id="p" value="0.5" step="0.01" min="0" max="1" required><br><br>
+                    <button id="button" onclick="generateGraphs()">Generate Graphs</button>
+                </form>
+                <div id="charts" style="display: none;">
+                    <div class="graph">
+                        <h2>Flat Line Graph</h2>
+                        <canvas id="flat-line-graph"></canvas>
+                    </div>
+                    <div class="graph">
+                        <h2>Frequency Distribution</h2>
+                        <canvas id="histogram"></canvas>
+                    </div>
+                </div>
 
-    <div class="page__inner-wrap">
-        {% unless page.header.overlay_color or page.header.overlay_image %}
-        <header>
-            {% if page.title %}<h1 id="page-title" class="page__title" itemprop="headline">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</h1>{% endif %}
-            {% if page.read_time %}
-            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> {% include read-time.html %}</p>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                <script>
+
+                    let flatLineChart = null;
+                    let histogramChart = null;
+
+                    function generateRandomColor() {
+                        let colore = '#';
+                        for (let i = 0; i < 6; i++) {
+                            colore += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
+                        }
+                        return colore;
+                    }
+
+                    function plotFlatLineChart(servers, hackers, breachDatasets) {
+                        if (flatLineChart !== null) {
+                            flatLineChart.destroy();
+                        }
+                        const ctx = document.getElementById('flat-line-graph').getContext('2d');
+
+                        flatLineChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: servers,
+                                datasets: breachDatasets.map(dataset => ({
+                                    ...dataset,
+                                    pointRadius: 0,
+                                })),
+                            },
+                            options: {
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        animation: false,
+                                        enabled: true,
+                                        callbacks: {
+                                            label: function (context) {
+                                                const label = context.dataset.label || '';
+                                                return label + ' ==> breached servers: ' + context.raw;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        display: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Servers',
+                                            font: {
+                                                size: 18,
+                                            },
+                                        },
+                                        min: -1,
+                                        position: 'bottom'
+                                    },
+                                    y: {
+                                        display: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Breached Servers',
+                                            font: {
+                                                size: 18,
+                                            },
+                                        },
+                                        min: 0,
+                                        max: servers.length,
+                                        ticks: {
+                                            stepSize: 1,
+                                        }
+                                    }
+                                },
+                                maintainAspectRatio: false
+                            }
+                        });
+                    }
+
+                    function plotHistogram(servers, penetrationCounts) {
+                        if (histogramChart !== null) {
+                            histogramChart.destroy();
+                        }
+
+                        const secondCtx = document.getElementById('histogram').getContext('2d');
+
+                        histogramChart = new Chart(secondCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: servers,
+                                datasets: [{
+                                    label: "Number of hackers for each interval of breached servers",
+                                    backgroundColor: generateRandomColor(),
+                                    borderWidth: 2,
+                                    data: penetrationCounts,
+                                }]
+                            },
+                            options: {
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        display: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Breach Success distribution',
+                                            font: {
+                                                size: 18,
+                                            },
+                                        },
+                                        position: 'bottom'
+                                    },
+                                    y: {
+                                        display: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Hackers',
+                                            font: {
+                                                size: 18,
+                                            },
+                                        },
+                                        min: 0,
+                                        ticks: {
+                                            stepSize: 1,
+                                        }
+                                    }
+                                },
+                                maintainAspectRatio: false
+                            }
+                        });
+                    }
+
+                    function getDataset(hackers, servers, p) {
+                        let dataset = [];
+
+                        for (let i = 1; i <= hackers; i++) {
+                            let hackerInfo = [];
+                            let top = 0;
+
+                            for (let j = 0; j < servers; j++) {
+
+                                let x = top;
+
+                                if (p > Math.random()) { x = ++top; }
+
+                                hackerInfo.push(x);
+                            }
+
+                            dataset.push({
+                                data: hackerInfo,
+                                label: `Hacker ${i}`,
+                                borderColor: generateRandomColor(),
+                            });
+                        }
+
+                        return dataset;
+                    }
+
+                    function generateGraphs() {
+                        const n_servers = parseInt(document.getElementById('n').value);
+                        const n_hackers = parseInt(document.getElementById('m').value);
+                        const p = parseFloat(document.getElementById('p').value);
+
+                        // Validate input
+                        if (n_servers < 2 || n_servers > 500 || n_hackers < 1 || n_hackers > 500 || p < 0 || p > 1) {
+                            alert('Please enter values in these intervals:\n- 2-500 for servers\n- 1-500 for hackers\n- 0-1 for probability.');
+                            return;
+                        }
+
+                        const servers = [];
+                        for (let i = 1; i <= n_servers; i++) { servers.push(i); }
+
+                        const hackers = [];
+                        for (let i = 1; i <= n_hackers; i++) { hackers.push(i); }
+
+                        const breachDatasets = getDataset(hackers.length, servers.length, p);
+
+                        const maxSuccesses = Math.max(...breachDatasets.flatMap(dataset => dataset.data));
+
+                        let intervalCount = 5;
+                        if (maxSuccesses >= 20) {
+                            intervalCount = 15;
+                        } else if (maxSuccesses >= 50) {
+                            intervalCount = 30;
+                        } else if (maxSuccesses >= 100) {
+                            intervalCount = 87;
+                        } else if (maxSuccesses >= 200) {
+                            intervalCount = 170;
+                        } else if (maxSuccesses >= 300) {
+                            intervalCount = 270;
+                        } else if (maxSuccesses >= 400) {
+                            intervalCount = 390;
+                        }
+
+                        const intervalSize = Math.ceil(maxSuccesses / intervalCount);
+                        const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
+
+                        const distributionCounts = Array(intervalCount).fill(0);
+                        breachDatasets.forEach(dataset => {
+                            const index = Math.floor(dataset.data.at(-1) / intervalSize);
+                            if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
+                        });
+
+                        while (distributionCounts[0] === 0) {
+                            distributionCounts.shift();
+                            intervals.shift();
+                        }
+
+                        plotFlatLineChart(servers, hackers, breachDatasets);
+                        plotHistogram(intervals, distributionCounts);
+
+                        document.getElementById('charts').style.display = 'flex';
+                    }
+                </script>
+            </div>
+            <section class="page__content" itemprop="text">
+            {% if page.toc %}
+                <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+                <nav class="toc">
+                    <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+                    {% include toc.html sanitize=true html=content h_min=1 h_max=2 class="toc__menu" %}
+                </nav>
+                </aside>
             {% endif %}
-        </header>
-        {% endunless %}
+            {{ content }}
+            {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
+            </section>
 
-        <section class="page__content" itemprop="text">
-        {% if page.toc %}
-            <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
-            <nav class="toc">
-                <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
-                {% include toc.html sanitize=true html=content h_min=1 h_max=2 class="toc__menu" %}
-            </nav>
-            </aside>
+            <footer class="page__meta">
+            {% if site.data.ui-text[site.locale].meta_label %}
+                <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
+            {% endif %}
+            {% include page__taxonomy.html %}
+            {% if page.last_modified_at %}
+                <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Updated:" }}</strong> <time datetime="{{ page.last_modified_at | date: "%Y-%m-%d" }}">{{ page.last_modified_at | date: "%B %-d, %Y" }}</time></p>
+            {% elsif page.date %}
+                <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Updated:" }}</strong> <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time></p>
+            {% endif %}
+            </footer>
+
+            {% if page.share %}{% include social-share.html %}{% endif %}
+
+            {% include post_pagination.html %}
+        </div>
+        {% if jekyll.environment == 'production' and site.comments.provider and page.comments %}
+            {% include comments.html %}
         {% endif %}
-        {{ content }}
-        {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
-        </section>
-
-        <footer class="page__meta">
-        {% if site.data.ui-text[site.locale].meta_label %}
-            <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
-        {% endif %}
-        {% include page__taxonomy.html %}
-        {% if page.last_modified_at %}
-            <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Updated:" }}</strong> <time datetime="{{ page.last_modified_at | date: "%Y-%m-%d" }}">{{ page.last_modified_at | date: "%B %-d, %Y" }}</time></p>
-        {% elsif page.date %}
-            <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Updated:" }}</strong> <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time></p>
-        {% endif %}
-        </footer>
-
-        {% if page.share %}{% include social-share.html %}{% endif %}
-
-        {% include post_pagination.html %}
-    </div>
-
-    {% if jekyll.environment == 'production' and site.comments.provider and page.comments %}
-        {% include comments.html %}
-    {% endif %}
     </article>
 </body>
 
