@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hackers vs Servers Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F7F7F7;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 40px auto;
+            background-color: #FFFFFF;
+            padding: 20px;
+            border: 1px solid #CCCCCC;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #charts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .graph {
+            width: 45%;
+            height: 400px;
+            margin: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #CCCCCC;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #F2C464;
+            font-weight: bold;
+            color: #000000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #E6B655;
+        }
+
+        @media (max-width: 800px) {
+            .graph {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hackers vs Servers</h1>
+    <div class="container">
+        <form id="simulationForm" onsubmit="return false;">
+            <label for="n">Number of Servers:</label>
+            <input type="number" id="n" value="10" min="2" max="500" required><br><br>
+            <label for="m">Number of Hackers:</label>
+            <input type="number" id="m" value="5" min="1" max="500" required><br><br>
+            <label for="p">Breach Probability :</label>
+            <input type="number" id="p" value="0.5" step="0.01" min="0" max="1" required><br><br>
+            <button id="button" onclick="generateGraphs()">Generate Graphs</button>
+        </form>
+        <div id="charts" style="display: none;">
+            <div class="graph">
+                <h2>Flat Line Graph</h2>
+                <canvas id="flat-line-graph"></canvas>
+            </div>
+            <div class="graph">
+                <h2>Frequency Distribution</h2>
+                <canvas id="histogram"></canvas>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+
+            let flatLineChart = null;
+            let histogramChart = null;
+
+            function generateRandomColor() {
+                let colore = '#';
+                for (let i = 0; i < 6; i++) {
+                    colore += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
+                }
+                return colore;
+            }
+
+            function plotFlatLineChart(servers, hackers, breachDatasets) {
+                if (flatLineChart !== null) {
+                    flatLineChart.destroy();
+                }
+                const ctx = document.getElementById('flat-line-graph').getContext('2d');
+
+                flatLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: servers,
+                        datasets: breachDatasets.map(dataset => ({
+                            ...dataset,
+                            pointRadius: 0,
+                        })),
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                animation: false,
+                                enabled: true,
+                                callbacks: {
+                                    label: function (context) {
+                                        const label = context.dataset.label || '';
+                                        return label + ' ==> breached servers: ' + context.raw;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Servers',
+                                    font: {
+                                        size: 18,
+                                    },
+                                },
+                                min: -1,
+                                position: 'bottom'
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Breached Servers',
+                                    font: {
+                                        size: 18,
+                                    },
+                                },
+                                min: 0,
+                                max: servers.length,
+                                ticks: {
+                                    stepSize: 1,
+                                }
+                            }
+                        },
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            function plotHistogram(servers, penetrationCounts) {
+                if (histogramChart !== null) {
+                    histogramChart.destroy();
+                }
+
+                const secondCtx = document.getElementById('histogram').getContext('2d');
+
+                histogramChart = new Chart(secondCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: servers,
+                        datasets: [{
+                            label: "Number of hackers for each interval of breached servers",
+                            backgroundColor: generateRandomColor(),
+                            borderWidth: 2,
+                            data: penetrationCounts,
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Breach Success distribution',
+                                    font: {
+                                        size: 18,
+                                    },
+                                },
+                                position: 'bottom'
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Hackers',
+                                    font: {
+                                        size: 18,
+                                    },
+                                },
+                                min: 0,
+                                ticks: {
+                                    stepSize: 1,
+                                }
+                            }
+                        },
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            function getDataset(hackers, servers, p) {
+                let dataset = [];
+
+                for (let i = 1; i <= hackers; i++) {
+                    let hackerInfo = [];
+                    let top = 0;
+
+                    for (let j = 0; j < servers; j++) {
+
+                        let x = top;
+
+                        if (p > Math.random()) { x = ++top; }
+
+                        hackerInfo.push(x);
+                    }
+
+                    dataset.push({
+                        data: hackerInfo,
+                        label: `Hacker ${i}`,
+                        borderColor: generateRandomColor(),
+                    });
+                }
+
+                return dataset;
+            }
+
+            function generateGraphs() {
+                const n_servers = parseInt(document.getElementById('n').value);
+                const n_hackers = parseInt(document.getElementById('m').value);
+                const p = parseFloat(document.getElementById('p').value);
+
+                // Validate input
+                if (n_servers < 2 || n_servers > 500 || n_hackers < 1 || n_hackers > 500 || p < 0 || p > 1) {
+                    alert('Please enter values in these intervals:\n- 2-500 for servers\n- 1-500 for hackers\n- 0-1 for probability.');
+                    return;
+                }
+
+                const servers = [];
+                for (let i = 1; i <= n_servers; i++) { servers.push(i); }
+
+                const hackers = [];
+                for (let i = 1; i <= n_hackers; i++) { hackers.push(i); }
+
+                const breachDatasets = getDataset(hackers.length, servers.length, p);
+
+                const maxSuccesses = Math.max(...breachDatasets.flatMap(dataset => dataset.data));
+
+                let intervalCount = 5;
+                if (maxSuccesses >= 20) {
+                    intervalCount = 15;
+                } else if (maxSuccesses >= 50) {
+                    intervalCount = 30;
+                } else if (maxSuccesses >= 100) {
+                    intervalCount = 87;
+                } else if (maxSuccesses >= 200) {
+                    intervalCount = 170;
+                } else if (maxSuccesses >= 300) {
+                    intervalCount = 270;
+                } else if (maxSuccesses >= 400) {
+                    intervalCount = 390;
+                }
+
+                const intervalSize = Math.ceil(maxSuccesses / intervalCount);
+                const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
+
+                const distributionCounts = Array(intervalCount).fill(0);
+                breachDatasets.forEach(dataset => {
+                    const index = Math.floor(dataset.data.at(-1) / intervalSize);
+                    if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
+                });
+
+                while (distributionCounts[0] === 0) {
+                    distributionCounts.shift();
+                    intervals.shift();
+                }
+
+                plotFlatLineChart(servers, hackers, breachDatasets);
+                plotHistogram(intervals, distributionCounts);
+
+                document.getElementById('charts').style.display = 'flex';
+            }
+
+        </script>
+    </div>
+</body>
+
+</html>

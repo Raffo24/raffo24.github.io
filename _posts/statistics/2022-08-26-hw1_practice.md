@@ -5,13 +5,17 @@ date: 2024-10-06 01:27:00 +0200
 header:
   teaser: /assets/images/blog/statistics/hw1.png
 ribbon: MidnightBlue
-layout: hw1_practice
 categories:
   - Statistics
 toc: true
 ---
 
-## Core Function
+## Online Implementation
+
+[Online Simulation](https://raffo24.github.io/statistics/hw1_code/)
+
+## Main Function
+![image-center](/assets/images/blog/statistics/codes/mainFunHw1.png){: .align-center}
 
 This is the core function of the program, which executes the following steps:
 1. **Input Validation**: The function performs validation on the input to prevent potential errors and bugs.
@@ -24,4 +28,7 @@ This is the core function of the program, which executes the following steps:
 8. **Empty Space Removal**: Any leading empty spaces in the histogram are removed to ensure accurate visualization.
 9. **Plotting**: Finally, the program generates both the Flat Line Graph and the histogram for visual analysis.
 
-## Dataset Generation
+## Second Function
+
+![image-center](/assets/images/blog/statistics/codes/genDatasetHw1.png){: .align-center}
+
