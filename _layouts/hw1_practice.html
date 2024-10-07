@@ -41,7 +41,8 @@
     }
     button {
       background-color: #F2C464;
-      color: #FFFFFF;
+      font-weight: bold;
+      color: #000000;
       padding: 10px 20px;
       border: none;
       border-radius: 5px;
@@ -86,7 +87,7 @@
       let flatLineChart = null;
       let histogramChart = null;
 
-      function createFlatLineChart(servers, attackers, attackerDatatsets) {
+      function createFlatLineChart(servers, attackers, attackerDatatsets, hackersCounts) {
           if (flatLineChart !== null) {
               flatLineChart.destroy();
           }
@@ -106,14 +107,24 @@
                   plugins: {
                       legend: {
                           display: false
-                      }
+                      },
+                      tooltip: {
+                        animation: false, // Disabilita l'animazione del tooltip per una risposta istantanea
+                        enabled: true,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                return label + ' ==> breached servers: ' + context.raw;
+                                }
+                            }
+                        }
                   },
                   scales: {
                       x: {
                           display: true,
                           title: {
                               display: true,
-                              text: 'servers',
+                              text: 'Servers',
                               font: {
                                   size: 18,
                               },
@@ -125,7 +136,7 @@
                           display: true,
                           title: {
                               display: true,
-                              text: 'breached servers',
+                              text: 'Breached Servers',
                               font: {
                                   size: 18,
                               },
@@ -133,7 +144,7 @@
                           min: 0,
                           max: servers.length,
                           ticks: {
-                              stepSize: 1
+                              stepSize: 1,
                           }
                       }
                   },
@@ -154,7 +165,7 @@
               data: {
                   labels: servers,
                   datasets: [{
-                      label: "Number of attackers for each level",
+                      label: "Number of hackers for each interval of breached servers",
                       backgroundColor: generateRandomHexColor(),
                       borderWidth: 2,
                       data: penetrationCounts,
@@ -182,12 +193,15 @@
                           display: true,
                           title: {
                               display: true,
-                              text: 'attackers',
+                              text: 'Hackers',
                               font: {
                                   size: 18,
                               },
                           },
-                          min: 0
+                          min: 0,
+                          ticks: {
+                            stepSize: 1, // Imposta stepSize a 1 per visualizzare solo numeri interi
+                          }
                       }
                   },
                   maintainAspectRatio: false
@@ -215,7 +229,7 @@
               }
 
               dataset.push({
-                  label: `Attacker ${i}`,
+                  label: `Hacker ${i}`,
                   data: attackerData,
                   borderColor: generateRandomHexColor(),
                   borderWidth: 2,
@@ -263,34 +277,53 @@
         // Calcolare la distribuzione dei successi per intervalli
         const maxSuccesses = Math.max(...attackerDatatsets.flatMap(dataset => dataset.data));
         
-        let intervalCount;
-        if (integer1 >= 40) {
-            intervalCount = 20; // 20 intervals for 40 or more servers
-        } else if (integer1 === 30) {
-            intervalCount = 15; // 15 intervals for 30 servers
-        } else {
-            // Gradually decrease the number of intervals based on the number of servers
-            intervalCount = Math.max(5, Math.floor(20 * (integer1 / 40))); // 5 as the minimum
+        let intervalCount = 5;
+        if (maxSuccesses >= 20) {
+            intervalCount = 15;
+        } else if (maxSuccesses >= 50) {
+            intervalCount = 30;
+        } else if (maxSuccesses >= 100) {
+            intervalCount = 87;
+        } else if (maxSuccesses >= 200) {
+            intervalCount = 170;
+        } else if (maxSuccesses >= 300) {
+            intervalCount = 270;
+        } else if (maxSuccesses >= 400) {
+            intervalCount = 390;
         }
 
         // Calcolare gli intervalli
         const intervalSize = Math.ceil(maxSuccesses / intervalCount); // Size of each interval
-        const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize - 1}`);
+        const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
         
         // Calcolare la distribuzione
         const distributionCounts = Array(intervalCount).fill(0);
-        
         attackerDatatsets.forEach(dataset => {
-            dataset.data.forEach(value => {
-                const index = Math.floor(value / intervalSize);
-                if (index >= 0 && index < intervalCount) {
+            const index = Math.floor(dataset.data.at(-1) / intervalSize);
+            if (index >= 0 && index < intervalCount) {
                     distributionCounts[index]++;
                 }
-            });
         });
+            // Calcola il numero di hacker che hanno violato x numero di server
+            // il numero di server violati come chiave e il numero di hacker come valore
+            const hackersCounts = {}
+            for (let i = 0; i < attackerDatatsets.length; i++) {
+                const breachedServers = attackerDatatsets[i].data.at(-1);
+                if (hackersCounts[breachedServers] === undefined) {
+                    hackersCounts[breachedServers] = 1;
+                } else {
+                    hackersCounts[breachedServers]++;
+                }
+            }
+
+        // togli intervalli inziali che sono vuoti
+        while (distributionCounts[0] === 0) {
+            distributionCounts.shift();
+            intervals.shift();
+        }
 
         // Creare i grafici
-        createFlatLineChart(servers, attackers, attackerDatatsets);
+        createFlatLineChart(servers, attackers, attackerDatatsets, hackersCounts);
         createHistogram(intervals, distributionCounts);
 
         // Mostrare i grafici
