@@ -11,6 +11,8 @@ categories:
 toc: true
 ---
 
+## Core Function
+
 This is the core function of the program, which executes the following steps:
 1. **Input Validation**: The function performs validation on the input to prevent potential errors and bugs.
 2. **Array Population**: It populates the `servers` and `hackers` arrays with sequential numbers.
@@ -21,3 +23,5 @@ This is the core function of the program, which executes the following steps:
 7. **Dataset Division**: The dataset is then divided into the relevant intervals for histogram plotting and distribution calculation.
 8. **Empty Space Removal**: Any leading empty spaces in the histogram are removed to ensure accurate visualization.
 9. **Plotting**: Finally, the program generates both the Flat Line Graph and the histogram for visual analysis.
+
+## Dataset Generation
