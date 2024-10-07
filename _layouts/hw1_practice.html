@@ -233,7 +233,7 @@
                 let dataset = [];
 
                 for (let i = 1; i <= hackers; i++) {
-                    let hackerData = [];
+                    let hackerInfo = [];
                     let top = 0;
 
                     for (let j = 0; j < servers; j++) {
@@ -242,12 +242,12 @@
 
                         if (p > Math.random()) { x = ++top; }
 
-                        hackerData.push(x);
+                        hackerInfo.push(x);
                     }
 
                     dataset.push({
+                        data: hackerInfo,
                         label: `Hacker ${i}`,
-                        data: hackerData,
                         borderColor: generateRandomColor(),
                     });
                 }
