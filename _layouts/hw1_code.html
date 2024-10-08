@@ -274,19 +274,21 @@
                 const breachDatasets = getDataset(hackers.length, servers.length, p);
 
                 const serversCount = servers.length;
-
-                if (serversCount >= 20) {
+                intervalSize = 1
+                if (serversCount >= 10) {
+                    intervalSize = 2
+                } else if (serversCount >= 20) {
                     intervalSize = 3
                 } else if (serversCount >= 50) {
-                    intervalSize = 5
+                    intervalSize = 4
                 } else if (serversCount >= 100) {
-                    intervalSize = 7
+                    intervalSize = 5
                 } else if (serversCount >= 200) {
-                    intervalSize = 8
+                    intervalSize = 6
                 } else if (serversCount >= 300) {
-                    intervalSize = 9
+                    intervalSize = 7
                 } else if (serversCount >= 400) {
-                    intervalSize = 10
+                    intervalSize = 8
                 }
                 const intervalCount = Math.ceil(serversCount / intervalSize);
 
