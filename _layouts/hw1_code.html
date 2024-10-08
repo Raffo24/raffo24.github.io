@@ -288,9 +288,9 @@
                 } else if (serversCount >= 400) {
                     intervalSize = 10
                 }
+                const intervalCount = Math.ceil(serversCount / intervalSize);
 
                 const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
-                const intervalCount = Math.ceil(serversCount / intervalSize);
                 const distributionCounts = Array(intervalCount).fill(0);
                 breachDatasets.forEach(dataset => {
                     const index = Math.floor(dataset.data.at(-1) / intervalSize);
