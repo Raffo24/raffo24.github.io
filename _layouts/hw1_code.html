@@ -303,6 +303,10 @@
                     distributionCounts.shift();
                     intervals.shift();
                 }
+                while (distributionCounts.at(-1) === 0) {
+                    distributionCounts.pop();
+                    intervals.pop();
+                }
 
                 plotFlatLineChart(servers, hackers, breachDatasets);
                 plotHistogram(intervals, distributionCounts);
