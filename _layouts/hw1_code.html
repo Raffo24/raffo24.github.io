@@ -280,13 +280,13 @@
                 } else if (serversCount >= 50) {
                     intervalSize = 5
                 } else if (serversCount >= 100) {
-                    intervalSize = 8
+                    intervalSize = 7
                 } else if (serversCount >= 200) {
-                    intervalSize = 10
+                    intervalSize = 8
                 } else if (serversCount >= 300) {
-                    intervalSize = 15
+                    intervalSize = 9
                 } else if (serversCount >= 400) {
-                    intervalSize = 20
+                    intervalSize = 10
                 }
 
                 const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
