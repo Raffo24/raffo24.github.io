@@ -149,7 +149,13 @@
                                     },
                                 },
                                 min: -1,
-                                position: 'bottom'
+                                position: 'bottom',
+                                ticks: {
+                                    stepSize: 1,
+                                    font: {
+                                        size: 10
+                                    }
+                                }
                             },
                             y: {
                                 display: true,
@@ -164,6 +170,9 @@
                                 max: servers.length,
                                 ticks: {
                                     stepSize: 1,
+                                    font: {
+                                        size: 10
+                                    }
                                 }
                             }
                         },
@@ -225,6 +234,9 @@
                                 min: 0,
                                 ticks: {
                                     stepSize: 1,
+                                    font: {
+                                        size: 10
+                                    }
                                 }
                             }
                         },
