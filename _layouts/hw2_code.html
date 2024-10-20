@@ -182,7 +182,6 @@
                                     },
                                 },
                                 min: 0,
-                                max: servers.length,
                                 ticks: {
                                     stepSize: 1,
                                     font: {
@@ -268,12 +267,9 @@
                     let top = 0;
 
                     for (let j = 0; j < servers; j++) {
-
                         let x = top;
-
                         if (p > Math.random()) { x = ++top; }
                         else { x = --top; }
-
                         hackerInfo.push(x);
                     }
 
