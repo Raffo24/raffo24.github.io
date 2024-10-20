@@ -198,18 +198,19 @@
                 });
             }
 
-            function plotHistogram(servers, penetrationCounts, chartId) {
+            function plotHistogram(intervals, penetrationCounts, chartId) {
                 if (histogramChart !== null) {
                     histogramChart.destroy();
                 }
                 if (histogramStepChart !== null) {
                     histogramStepChart.destroy();
                 }
+                console.log()
                 console.log(penetrationCounts)
                 return new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: servers,
+                        labels: intervals,
                         datasets: [{
                             label: "Number of hackers for each interval of breached servers",
                             backgroundColor: generateRandomColor(),
@@ -361,7 +362,7 @@
                         dataset.data = dataset.data.map((value, step) => value / step )
                     })
                 }
-                let distributionCounts, intervals, stats = getDistribution(servers.length, datasets);
+                let distributionCounts, intervals, stats = getDistribution(n_servers, datasets);
                 let distributionCountsStep, intervalsStep, statsStep = getDistribution(stepx, datasets);
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 histogramChart = plotHistogram(intervals, distributionCounts, 'histogram');
