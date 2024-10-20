@@ -378,7 +378,7 @@
                 }
                 console.log("distrib",distributionCounts);
                 console.log(intervals);
-                return distributionCounts, intervals, stats;
+                return {"dis" : distributionCounts, "inter" : intervals, "stats": stats};
             }
             function generateGraphs() {
                 const n_servers = parseInt(document.getElementById('n').value);
@@ -409,8 +409,17 @@
                         dataset.data = dataset.data.map((value, step) => value / step )
                     })
                 }
-                let distributionCounts, intervals, stats = getDistribution(n_servers, datasets);
-                let distributionCountsStep, intervalsStep, statsStep = getDistribution(stepx, datasets);
+                let datadis = getDistribution(n_servers, datasets);
+
+                let distributionCounts = datadis["dis"]
+                let intervals = datadis["inter"];
+                let stats = datadis["stats"];
+
+                let datadisStep = getDistribution(stepx, datasets);
+                let distributionCountsStep = datadisStep["dis"]
+                let intervalsStep = datadisStep["inter"];
+                let statsStep = datadisStep["stats"];
+                
                 console.log("dis", distributionCounts, intervals);
                 console.log("step", distributionCountsStep, intervalsStep);
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
