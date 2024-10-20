@@ -113,7 +113,7 @@
 
             let flatLineChart = null;
             let histogramChart = null;
-            let histogramStepchart = null;
+            let histogramStepChart = null;
 
             function generateRandomColor() {
                 let colore = '#';
@@ -203,10 +203,11 @@
                 if (histogramChart !== null) {
                     histogramChart.destroy();
                 }
+                if (histogramStepChart !== null) {
+                    histogramStepChart.destroy();
+                }
 
-                const chartx = document.getElementById(chartId).getContext('2d');
-
-                return new Chart(chartx, {
+                return new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: servers,
@@ -362,8 +363,8 @@
                 let distributionCounts, intervals, stats = getDistribution(servers.length, datasets);
                 let distributionCountsStep, intervalsStep, statsStep = getDistribution(step, datasets);
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
-                histogramchart = plotHistogram(intervals, distributionCounts, 'histogram');
-                histogramStepchart = plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
+                histogramChart = plotHistogram(intervals, distributionCounts, 'histogram');
+                histogramStepChart = plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
                 // add to document the two values: absolute frequency e relative frequency
                 document.getElementById("statsStep").textContent = `Final Mean: ${statsStep.mean.toFixed(2)}, Final Variance: ${statsStep.variance.toFixed(2)}`;
