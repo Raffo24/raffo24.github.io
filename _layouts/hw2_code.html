@@ -206,7 +206,7 @@
 
                 const chartx = document.getElementById(chartId).getContext('2d');
 
-                histogramChart = new Chart(chartx, {
+                return new Chart(chartx, {
                     type: 'bar',
                     data: {
                         labels: servers,
@@ -362,8 +362,8 @@
                 let distributionCounts, intervals, stats = getDistribution(servers.length, datasets);
                 let distributionCountsStep, intervalsStep, statsStep = getDistribution(step, datasets);
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
-                plotHistogram(intervals, distributionCounts, 'histogram');
-                plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
+                histogramchart = plotHistogram(intervals, distributionCounts, 'histogram');
+                histogramStepchart = plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
                 // add to document the two values: absolute frequency e relative frequency
                 document.getElementById("statsStep").textContent = `Final Mean: ${statsStep.mean.toFixed(2)}, Final Variance: ${statsStep.variance.toFixed(2)}`;
