@@ -337,7 +337,7 @@
                 return { mean, variance };
             }
 
-            function getDistribution(n, datasets, len){
+            function getDistribution(n, datasets){
                 intervalSize = 1;
                 if (n >= 10) {
                     intervalSize = 2
@@ -361,13 +361,13 @@
                 } else {
                     intervals = Array.from({ length: intervalCount }, (_, i) => `${i}`);
                 }
-                const distributionCounts = Array(Math.ceil(len / intervalSize)).fill(0);
+                const distributionCounts = Array(intervalCount).fill(0);
                 datasets.forEach(dataset => {
                     const index = Math.floor(dataset.data.at(n-1) / intervalSize);
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
                 });
 
-                let stats = calculateStats(distributionCounts)
+                
                 while (distributionCounts[0] === 0) {
                     distributionCounts.shift();
                     intervals.shift();
@@ -376,7 +376,7 @@
                     distributionCounts.pop();
                     intervals.pop();
                 }
-                return {"dis" : distributionCounts, "inter" : intervals, "stats": stats};
+                return {"dis" : distributionCounts, "inter" : intervals};
             }
             function generateGraphs() {
                 const n_servers = parseInt(document.getElementById('n').value);
@@ -407,16 +407,17 @@
                         dataset.data = dataset.data.map((value, step) => value / step )
                     })
                 }
-                let datadis = getDistribution(n_servers, datasets, n_servers);
+                let datadis = getDistribution(n_servers, datasets);
                 let distributionCounts = datadis["dis"]
                 let intervals = datadis["inter"];
-                let stats = datadis["stats"];
 
-                let datadisStep = getDistribution(stepx, datasets, n_servers);
-                let distributionCountsStep = datadisStep["dis"]
-                let intervalsStep = datadisStep["inter"];
-                let statsStep = datadisStep["stats"];
-                
+
+
+                let distributionCountsStep = distributionCounts.slice(0, stepx)
+                let intervalsStep = intervals.slice(0, stepx)
+
+                let stats = calculateStats(distributionCounts)
+                let statsStep = calculateStats(distributionCountsStep)
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 plotHistogram(intervals, distributionCounts, 'histogram');
                 plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
