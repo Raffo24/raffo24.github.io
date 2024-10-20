@@ -80,6 +80,27 @@
             outline: none;
             border-color: #F2C464;
         }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            display: none; 
+        }
+
+        .checkbox-container .custom-checkbox {
+            width: 16px; height: 16px; border: 2px solid #CCCCCC; border-radius: 2px; background: #FFFFFF; margin-right: 8px; cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
+            background: #F2C464; border-color: #F2C464; position: relative;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .custom-checkbox::after {
+            content: ''; position: absolute; width: 4px; height: 8px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); top: 2px; left: 6px;
+        }
 
         @media (max-width: 800px) {
             .graph {
