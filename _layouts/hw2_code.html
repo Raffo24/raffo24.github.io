@@ -292,25 +292,6 @@
                 return dataset;
             }
 
-            // function to calculate absolute and relative frequency
-            function calculateFreq(penetrationHistory) {
-                let abs = Array(penetrationHistory[0].length).fill(0);
-                let rel = Array(penetrationHistory[0].length).fill(0);
-
-                // Absolute frequency
-                penetrationHistory.forEach((history, h) => {
-                    history.forEach((val, s) => {
-                        abs[s] += val;
-                    });
-                });
-
-                // relative frequency
-                for (let i = 0; i < abs.length; i++) {
-                    rel[i] = abs[i] / penetrationHistory.length;
-                }
-
-                return abs, rel;
-            }
             function getDistribution(n, datasets){
                 intervalSize = 1;
                 if (n >= 10) {
