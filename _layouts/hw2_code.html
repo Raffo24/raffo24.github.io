@@ -121,7 +121,7 @@
                 return colore;
             }
 
-            function plotFlatLineChart(servers, hackers, breachDatasets, randomWalk) {
+            function plotFlatLineChart(servers, hackers, datasets, randomWalk) {
                 if (flatLineChart !== null) {
                     flatLineChart.destroy();
                 }
@@ -136,7 +136,7 @@
                     })
                     console.log(datasets)
                 }
-                let data = breachDatasets.map(dataset => ({
+                let data = datasets.map(dataset => ({
                     ...dataset,
                     pointRadius: 0,
                 }))
@@ -270,7 +270,7 @@
             }
             function getDataset(hackers, servers, p, randomWalk) {
                 let dataset = [];
-                
+                console.log("randomwal", randomWalk.checked)
                 for (let i = 1; i <= hackers; i++) {
                     let hackerInfo = [];
                     let top = 0;
