@@ -208,12 +208,12 @@
                 });
             }
 
-            function plotHistogram(servers, penetrationCounts) {
+            function plotHistogram(servers, penetrationCounts, chartId) {
                 if (histogramChart !== null) {
                     histogramChart.destroy();
                 }
 
-                const secondCtx = document.getElementById('histogram').getContext('2d');
+                const secondCtx = document.getElementById().getContext('2d');
 
                 histogramChart = new Chart(secondCtx, {
                     type: 'bar',
@@ -320,7 +320,7 @@
                 const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
                 const distributionCounts = Array(intervalCount).fill(0);
                 datasets.forEach(dataset => {
-                    const index = Math.floor(dataset.data.at(-1) / intervalSize);
+                    const index = Math.floor(dataset.data.at(n-1) / intervalSize);
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
                 });
 
@@ -332,23 +332,23 @@
                     distributionCounts.pop();
                     intervals.pop();
                 }
-                return distributionCounts;
+                return distributionCounts, intervals;
             }
             function generateGraphs() {
                 const n_servers = parseInt(document.getElementById('n').value);
                 const n_hackers = parseInt(document.getElementById('m').value);
-                //const p = parseFloat(document.getElementById('p').value);
-                //const step = parseInt(document.getElementById('step').value);
+                const p = parseFloat(document.getElementById('p').value);
+                const step = parseInt(document.getElementById('step').value);
                 let frequencyType = document.getElementById("frequencyType").value;
                 // Validate input
                 if (n_servers < 2 || n_servers > 500 || n_hackers < 1 || n_hackers > 500 || p < 0 || p > 1) {
                     alert('Please enter values in these intervals:\n- 2-500 for servers\n- 1-500 for hackers\n- 0-1 for probability.');
                     return;
                 }
-                /*if (step >= n_servers){
+                if (step >= n_servers){
                     alert("Please enter value: x_step < n_servers");
                     return;
-                }*/
+                }
                 const servers = [];
                 for (let i = 1; i <= n_servers; i++) { servers.push(i); }
 
@@ -357,11 +357,11 @@
 
                 const breachDatasets = getDataset(hackers.length, servers.length, p);
 
-                distributionCounts = getDistribution(servers.length, breachDatasets)
-
+                distributionCounts, intervals = getDistribution(servers.length, breachDatasets);
+                distributionCountsStep, intervalsStep = getDistribution(step, breachDatasets);
                 plotFlatLineChart(servers, hackers, breachDatasets);
-                plotHistogram(intervals, distributionCounts);
-                //plotHistogramStep()
+                plotHistogram(intervals, distributionCounts, 'histogram');
+                plotHistogram(distributionCountsStep, intervalsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
             }
 
