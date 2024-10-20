@@ -364,11 +364,11 @@
                 });
 
                 let stats = calculateStats(distributionCounts)
-                while (distributionCounts[0] == 0) {
+                while (distributionCounts[0] === 0) {
                     distributionCounts.shift();
                     intervals.shift();
                 }
-                while (distributionCounts.at(-1) == 0) {
+                while (distributionCounts.at(-1) === 0) {
                     distributionCounts.pop();
                     intervals.pop();
                 }
