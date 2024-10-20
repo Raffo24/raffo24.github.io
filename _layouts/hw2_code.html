@@ -85,10 +85,13 @@
                 <option value="absoluteFrequency">Absolute Frequency</option>
                 <option value="relativeFrequency">Relative Frequency {interval [-1,1]}</option>
             </select>
+            <br>
             <input type="radio" id="bernulli" name="processGroup">
             <label for="bernulli" class="form-check-label">Bernulli [uses rate of occurrences λ]</label>
+            <br>
             <input type="radio" id="randomWalk" name="processGroup">
             <label for="randomWalk" class="form-check-label">Random Walk (RW) [µ=0, uses σ] Absolute Frequency</label>
+            
             <button id="button" onclick="generateGraphs()">Generate Graphs</button>
         </form>
         <div id="charts" style="display: none;">
