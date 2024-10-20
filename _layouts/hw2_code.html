@@ -84,6 +84,10 @@
             <button id="button" onclick="generateGraphs()">Generate Graphs</button><br><br>
             <label for="step">randomWalk</label>
             <input type="checkbox" id="randomWalk" checked>
+            <select id="frequencyType">
+                <option value="absolute" selected>Absolute Frequency</option>
+                <option value="relative">Relative Frequency</option>
+            </select>
         </form>
         <div id="charts" style="display: none;">
             <div class="graph">
@@ -274,6 +278,26 @@
                 }
 
                 return dataset;
+            }
+
+            // function to calculate absolute and relative frequency
+            function calculateFreq(penetrationHistory) {
+                let abs = Array(penetrationHistory[0].length).fill(0);
+                let rel = Array(penetrationHistory[0].length).fill(0);
+
+                // Absolute frequency
+                penetrationHistory.forEach((history, h) => {
+                    history.forEach((val, s) => {
+                        abs[s] += val;
+                    });
+                });
+
+                // relative frequency
+                for (let i = 0; i < abs.length; i++) {
+                    rel[i] = abs[i] / penetrationHistory.length;
+                }
+
+                return abs, rel;
             }
             function getDistribution(n, datasets){
                 intervalSize = 1;
