@@ -206,7 +206,7 @@
                             afterDraw: (chart) => {
                                 const ctx = chart.ctx;
                                 const xAxis = chart.scales.x;
-                                const xPos = xAxis.getPixelForValue(stepx);
+                                const xPos = xAxis.getPixelForValue(servers[stepx]);
                                 ctx.save();
                                 ctx.beginPath();
                                 ctx.moveTo(xPos, chart.chartArea.top);
