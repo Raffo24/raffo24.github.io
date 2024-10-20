@@ -128,11 +128,20 @@
                 const ctx = document.getElementById('flat-line-graph').getContext('2d');
                 let frequencyType = document.getElementById("frequencyType").value;
                 
+
+                console.log(datasets)
+                if (frequencyType === 'absolute'){
+                    datasets.map((dataset) => {
+                        dataset.data = dataset.data.map((value, step) => value / step )
+                    })
+                    console.log(datasets)
+                }
                 let data = breachDatasets.map(dataset => ({
                             ...dataset,
                             pointRadius: 0,
-                        }))
-                console.log(data)
+                }))
+
+                
 
                 flatLineChart = new Chart(ctx, {
                     type: 'line',
