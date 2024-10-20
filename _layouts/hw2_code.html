@@ -250,6 +250,14 @@
                 if (histogramCharts[chartId] !== null) {
                     histogramCharts[chartId].destroy();
                 }
+                while (penetrationCounts[0] === 0) {
+                    penetrationCounts.shift();
+                    intervals.shift();
+                }
+                while (penetrationCounts.at(-1) === 0) {
+                    penetrationCounts.pop();
+                    intervals.pop();
+                }
                 histogramCharts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -401,30 +409,12 @@
                 let distributionCounts = datadis["dis"]
                 let intervals = datadis["inter"];
 
-
-
                 let distributionCountsStep = distributionCounts.slice(0, stepx)
                 let intervalsStep = intervals.slice(0, stepx)
 
                 let stats = calculateStats(distributionCounts)
                 let statsStep = calculateStats(distributionCountsStep)
 
-                while (distributionCounts[0] === 0) {
-                    distributionCounts.shift();
-                    intervals.shift();
-                }
-                while (distributionCounts.at(-1) === 0) {
-                    distributionCounts.pop();
-                    intervals.pop();
-                }
-                while (distributionCountsStep[0] === 0) {
-                    distributionCountsStep.shift();
-                    intervalsStep.shift();
-                }
-                while (distributionCountsStep.at(-1) === 0) {
-                    distributionCountsStep.pop();
-                    intervalsStep.pop();
-                }
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 plotHistogram(intervals, distributionCounts, 'histogram');
                 plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
