@@ -128,7 +128,7 @@
             <input type="number" id="m" value="10" min="1" max="500" required><br><br>
             <label for="p">Breach Probability :</label>
             <input type="number" id="p" value="0.5" step="0.01" min="0" max="1" required><br><br>
-            <label for="step">step</label>
+            <label for="step">Step</label>
             <input type="number" id="step" value="25" min="0" step="1"> <br><br>
             <button id="button" onclick="generateGraphs()">Generate Graphs</button><br><br>
             <label for="randomWalk">randomWalk</label>
@@ -422,7 +422,7 @@
                 plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
 
-                document.getElementById("statsStep").textContent = `Final Mean: ${statsStep.mean.toFixed(2)}, Final Variance: ${statsStep.variance.toFixed(2)}`;
+                document.getElementById("statsStep").textContent = `Step Mean: ${statsStep.mean.toFixed(2)}, Step Variance: ${statsStep.variance.toFixed(2)}`;
                 document.getElementById("finalStats").textContent = `Final Mean: ${stats.mean.toFixed(2)}, Final Variance: ${stats.variance.toFixed(2)}`;
             }
 
