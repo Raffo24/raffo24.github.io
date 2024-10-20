@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hackers vs Servers Simulation</title>
+    <title>Euler Maruyama Simulation</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -79,6 +79,28 @@
             <input type="number" id="m" value="50" min="1" max="500" required><br><br>
             <label for="p">Breach Probability :</label>
             <input type="number" id="p" value="0.4" step="0.01" min="0" max="1" required><br><br>
+            <select id="frequencyType" name="frequencyType" class="form-control">
+                <option value="absoluteFrequency">Absolute Frequency</option>
+                <option value="relativeFrequency">Relative Frequency {interval [-1,1]}</option>
+            </select>
+            <div class="form-group">
+                <label for="step">step</label>
+                <input type="number" id="step" value="50" min="0" step="1" class="form-control">
+            </div>
+            <div class="form-group mt-3">
+                <select id="frequencyType" name="frequencyType" class="form-control">
+                    <option value="absoluteFrequency">Absolute Frequency</option>
+                    <option value="relativeFrequency">Relative Frequency {interval [-1,1]}</option>
+                </select>
+                <div class="form-check">
+                    <input type="radio" id="bernulli" name="processGroup" class="form-check-input">
+                    <label for="bernulli" class="form-check-label">Bernulli [uses rate of occurrences λ]</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="randomWalk" name="processGroup" checked class="form-check-input">
+                    <label for="randomWalk" class="form-check-label">Random Walk (RW) [µ=0, uses σ] Absolute Frequency</label>
+                </div>
+            </div>
             <button id="button" onclick="generateGraphs()">Generate Graphs</button>
         </form>
         <div id="charts" style="display: none;">
@@ -87,7 +109,11 @@
                 <canvas id="flat-line-graph"></canvas>
             </div>
             <div class="graph">
-                <h2>Frequency Distribution</h2>
+                <h2>Frequency Distribution at the step x</h2>
+                <canvas id="histogramStep"></canvas>
+            </div>
+            <div class="graph">
+                <h2>Frequency Distribution at the end</h2>
                 <canvas id="histogram"></canvas>
             </div>
         </div>
@@ -98,6 +124,7 @@
 
             let flatLineChart = null;
             let histogramChart = null;
+            let histogramStepchart
 
             function generateRandomColor() {
                 let colore = '#';
@@ -257,6 +284,7 @@
                         let x = top;
 
                         if (p > Math.random()) { x = ++top; }
+                        else { x = --top; }
 
                         hackerInfo.push(x);
                     }
@@ -270,48 +298,28 @@
 
                 return dataset;
             }
-
-            function generateGraphs() {
-                const n_servers = parseInt(document.getElementById('n').value);
-                const n_hackers = parseInt(document.getElementById('m').value);
-                const p = parseFloat(document.getElementById('p').value);
-
-                // Validate input
-                if (n_servers < 2 || n_servers > 500 || n_hackers < 1 || n_hackers > 500 || p < 0 || p > 1) {
-                    alert('Please enter values in these intervals:\n- 2-500 for servers\n- 1-500 for hackers\n- 0-1 for probability.');
-                    return;
-                }
-
-                const servers = [];
-                for (let i = 1; i <= n_servers; i++) { servers.push(i); }
-
-                const hackers = [];
-                for (let i = 1; i <= n_hackers; i++) { hackers.push(i); }
-
-                const breachDatasets = getDataset(hackers.length, servers.length, p);
-
-                const serversCount = servers.length;
-                intervalSize = 1
-                if (serversCount >= 10) {
+            function getDistribution(n, datasets){
+                intervalSize = 1;
+                if (n >= 10) {
                     intervalSize = 2
-                } else if (serversCount >= 20) {
+                } else if (n >= 20) {
                     intervalSize = 3
-                } else if (serversCount >= 50) {
+                } else if (n >= 50) {
                     intervalSize = 4
-                } else if (serversCount >= 100) {
+                } else if (n >= 100) {
                     intervalSize = 5
-                } else if (serversCount >= 200) {
+                } else if (n >= 200) {
                     intervalSize = 6
-                } else if (serversCount >= 300) {
+                } else if (n >= 300) {
                     intervalSize = 7
-                } else if (serversCount >= 400) {
+                } else if (n >= 400) {
                     intervalSize = 8
                 }
-                const intervalCount = Math.ceil(serversCount / intervalSize);
+                const intervalCount = Math.ceil(n / intervalSize);
 
                 const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
                 const distributionCounts = Array(intervalCount).fill(0);
-                breachDatasets.forEach(dataset => {
+                datasets.forEach(dataset => {
                     const index = Math.floor(dataset.data.at(-1) / intervalSize);
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
                 });
@@ -324,17 +332,43 @@
                     distributionCounts.pop();
                     intervals.pop();
                 }
+                return distributionCounts;
+            }
+            function generateGraphs() {
+                const n_servers = parseInt(document.getElementById('n').value);
+                const n_hackers = parseInt(document.getElementById('m').value);
+                //const p = parseFloat(document.getElementById('p').value);
+                //const step = parseInt(document.getElementById('step').value);
+                let frequencyType = document.getElementById("frequencyType").value;
+                // Validate input
+                if (n_servers < 2 || n_servers > 500 || n_hackers < 1 || n_hackers > 500 || p < 0 || p > 1) {
+                    alert('Please enter values in these intervals:\n- 2-500 for servers\n- 1-500 for hackers\n- 0-1 for probability.');
+                    return;
+                }
+                /*if (step >= n_servers){
+                    alert("Please enter value: x_step < n_servers");
+                    return;
+                }*/
+                const servers = [];
+                for (let i = 1; i <= n_servers; i++) { servers.push(i); }
+
+                const hackers = [];
+                for (let i = 1; i <= n_hackers; i++) { hackers.push(i); }
+
+                const breachDatasets = getDataset(hackers.length, servers.length, p);
+
+                distributionCounts = getDistribution(servers.length, breachDatasets)
 
                 plotFlatLineChart(servers, hackers, breachDatasets);
                 plotHistogram(intervals, distributionCounts);
-
+                //plotHistogramStep()
                 document.getElementById('charts').style.display = 'flex';
             }
 
         </script>
     </div>
     <div style="text-align: center; margin-top: 20px;">
-        <p><a href="/statistics/hw1" style="text-decoration: none; color: #337ab7;">Back to Theory</a></p>
+        <p><a href="/statistics/hw2" style="text-decoration: none; color: #337ab7;">Back to Theory</a></p>
     </div>
 </body>
 
