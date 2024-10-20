@@ -250,14 +250,6 @@
                 if (histogramCharts[chartId] !== null) {
                     histogramCharts[chartId].destroy();
                 }
-                while (penetrationCounts[0] === 0) {
-                    penetrationCounts.shift();
-                    intervals.shift();
-                }
-                while (penetrationCounts.at(-1) === 0) {
-                    penetrationCounts.pop();
-                    intervals.pop();
-                }
                 histogramCharts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -363,10 +355,10 @@
                     intervalSize = 8
                 }
                 const intervalCount = Math.ceil(n / intervalSize);
-                let intervals = null;
+                let intervals = null
                 if (intervalSize > 1){
                     intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
-                } else {
+                } else{
                     intervals = Array.from({ length: intervalCount }, (_, i) => `${i}`);
                 }
                 const distributionCounts = Array(intervalCount).fill(0);
@@ -374,7 +366,17 @@
                     const index = Math.floor(dataset.data.at(n-1) / intervalSize);
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
                 });
-                return {"dis" : distributionCounts, "inter" : intervals};
+
+                let stats = calculateStats(distributionCounts)
+                while (distributionCounts[0] === 0) {
+                    distributionCounts.shift();
+                    intervals.shift();
+                }
+                while (distributionCounts.at(-1) === 0) {
+                    distributionCounts.pop();
+                    intervals.pop();
+                }
+                return {"dis" : distributionCounts, "inter" : intervals, "stats": stats};
             }
             function generateGraphs() {
                 const n_servers = parseInt(document.getElementById('n').value);
@@ -408,13 +410,13 @@
                 let datadis = getDistribution(n_servers, datasets);
                 let distributionCounts = datadis["dis"]
                 let intervals = datadis["inter"];
+                let stats = datadis["stats"];
 
-                let distributionCountsStep = distributionCounts.slice(0, stepx)
-                let intervalsStep = intervals.slice(0, stepx)
-
-                let stats = calculateStats(distributionCounts)
-                let statsStep = calculateStats(distributionCountsStep)
-
+                let datadisStep = getDistribution(stepx+1, datasets);
+                let distributionCountsStep = datadisStep["dis"]
+                let intervalsStep = datadisStep["inter"];
+                let statsStep = datadisStep["stats"];
+                
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 plotHistogram(intervals, distributionCounts, 'histogram');
                 plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
