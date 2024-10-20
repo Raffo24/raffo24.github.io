@@ -337,7 +337,7 @@
                 return { mean, variance };
             }
 
-            function getDistribution(n, datasets){
+            function getDistribution(n, datasets, len){
                 intervalSize = 1;
                 if (n >= 10) {
                     intervalSize = 2
@@ -361,7 +361,7 @@
                 } else {
                     intervals = Array.from({ length: intervalCount }, (_, i) => `${i}`);
                 }
-                const distributionCounts = Array(Math.ceil(datasets[0].data.lenght / intervalSize)).fill(0);
+                const distributionCounts = Array(Math.ceil(len / intervalSize)).fill(0);
                 datasets.forEach(dataset => {
                     const index = Math.floor(dataset.data.at(n-1) / intervalSize);
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
@@ -407,12 +407,12 @@
                         dataset.data = dataset.data.map((value, step) => value / step )
                     })
                 }
-                let datadis = getDistribution(n_servers, datasets);
+                let datadis = getDistribution(n_servers, datasets, n_servers);
                 let distributionCounts = datadis["dis"]
                 let intervals = datadis["inter"];
                 let stats = datadis["stats"];
 
-                let datadisStep = getDistribution(stepx+1, datasets);
+                let datadisStep = getDistribution(stepx+1, datasets, n_servers);
                 let distributionCountsStep = datadisStep["dis"]
                 let intervalsStep = datadisStep["inter"];
                 let statsStep = datadisStep["stats"];
