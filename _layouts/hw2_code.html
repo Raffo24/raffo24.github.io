@@ -359,7 +359,7 @@
                 const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
                 const distributionCounts = Array(intervalCount).fill(0);
                 datasets.forEach(dataset => {
-                    const index = Math.floor(dataset.data.at(n-1) / intervalSize);
+                    const index = Math.floor(dataset.data.at(n) / intervalSize);
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
                 });
 
