@@ -153,8 +153,7 @@
         <script>
 
             let flatLineChart = null;
-            let histogramChart = null;
-            let histogramStepChart = null;
+            let histogramCharts = {"histogram" : null, "histogramStep" : null};
 
             function generateRandomColor() {
                 let colore = '#';
@@ -240,13 +239,10 @@
             }
 
             function plotHistogram(intervals, penetrationCounts, chartId) {
-                if (histogramChart !== null) {
-                    histogramChart.destroy();
+                if (histogramCharts[chartId] !== null) {
+                    histogramCharts[chartId].destroy();
                 }
-                if (histogramStepChart !== null) {
-                    histogramStepChart.destroy();
-                }
-                return new Chart(document.getElementById(chartId).getContext('2d'), {
+                histogramCharts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: intervals,
@@ -410,8 +406,8 @@
                 let statsStep = datadisStep["stats"];
                 
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
-                histogramChart = plotHistogram(intervals, distributionCounts, 'histogram');
-                histogramStepChart = plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
+                plotHistogram(intervals, distributionCounts, 'histogram');
+                plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
 
                 document.getElementById("statsStep").textContent = `Final Mean: ${statsStep.mean.toFixed(2)}, Final Variance: ${statsStep.variance.toFixed(2)}`;
