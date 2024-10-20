@@ -349,7 +349,7 @@
                 distributionCountsStep, intervalsStep = getDistribution(step, breachDatasets);
                 plotFlatLineChart(servers, hackers, breachDatasets);
                 plotHistogram(intervals, distributionCounts, 'histogram');
-                plotHistogram(distributionCountsStep, intervalsStep, 'histogramStep');
+                plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
             }
 
