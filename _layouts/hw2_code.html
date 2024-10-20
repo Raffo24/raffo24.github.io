@@ -411,7 +411,7 @@
                 let distributionCountsStep, intervalsStep, statsStep = getDistribution(stepx, datasets);
                 console.log("dis", distributionCounts, intervals);
                 console.log("step", distributionCountsStep, intervalsStep);
-                plotFlatLineChart(servers, hackers, datasets, randomWalk);
+                //plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 histogramChart = plotHistogram(intervals, distributionCounts, 'histogram');
                 histogramStepChart = plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
