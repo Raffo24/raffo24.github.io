@@ -410,7 +410,6 @@
                     })
                 }
                 let datadis = getDistribution(n_servers, datasets);
-
                 let distributionCounts = datadis["dis"]
                 let intervals = datadis["inter"];
                 let stats = datadis["stats"];
@@ -426,7 +425,7 @@
                 histogramChart = plotHistogram(intervals, distributionCounts, 'histogram');
                 histogramStepChart = plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
-                // add to document the two values: absolute frequency e relative frequency
+
                 document.getElementById("statsStep").textContent = `Final Mean: ${statsStep.mean.toFixed(2)}, Final Variance: ${statsStep.variance.toFixed(2)}`;
                 document.getElementById("finalStats").textContent = `Final Mean: ${stats.mean.toFixed(2)}, Final Variance: ${stats.variance.toFixed(2)}`;
             }
