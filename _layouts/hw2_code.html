@@ -1,139 +1,139 @@
 <!DOCTYPE html>
-<html>
-    <html lang="en"><head>
-        <meta charset="utf-8">
-        <title>Euler–Maruyama</title>
-        <style>
-            body {
-                background-color: #f4f4f4;
-                color: #333;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-            }
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Euler–Maruyama</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-            .container {
-                background-color: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                width: 80%;
-                max-width: 600px;
-            }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
 
-            h1 {
-                font-size: 24px;
-                color: darkgreen;
-                text-align: center;
-            }
+        h1 {
+            font-size: 24px;
+            color: darkgreen;
+            text-align: center;
+        }
 
-            h3 {
-                font-weight: bold;
-                font-family: verdana, sans-serif;
-                color: darkgreen;
-                text-align: center;
-            }
+        h3 {
+            font-weight: bold;
+            font-family: verdana, sans-serif;
+            color: darkgreen;
+            text-align: center;
+        }
 
-            label {
-                color: darkblue;
-                font-weight: bold;
-            }
+        label {
+            color: darkblue;
+            font-weight: bold;
+        }
 
-            input {
-                width: 100%;
-                padding: 10px;
-                margin: 10px 0;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-            input[type="radio"] {
-                margin-right: 5px;
-            }
+        input[type="radio"] {
+            margin-right: 5px;
+        }
 
-            button {
-                background-color: #007bff;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 4px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-            }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-            button:hover {
-                background-color: #0056b3;
-            }
+        button:hover {
+            background-color: #0056b3;
+        }
 
-            canvas {
-                background-color: black;
-                border: 1px solid blue;
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body class="bg-dark text-white">
-        <div class="container mt-5">
-            <h1>Euler–Maruyama</h1>
-            <div class="form-group">
-                <label for="timesInput"># times:</label>
-                <input type="number" id="timesInput" value="100" min="10" max="10000" step="10" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="pathsInput"># sample paths:</label>
-                <input type="number" id="pathsInput" value="50" min="10" max="10000" step="10" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="muInput">μ (drift):</label>
-                <input type="number" id="muInput" value="0" min="-20" max="20" step=".1" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="sigmaInput">σ (diffusion):</label>
-                <input type="number" id="sigmaInput" value="1" min="0.1" max="1000" step=".1" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="lambdaInput">λ:</label>
-                <input type="number" id="lambdaInput" value="50" min="1" max="1000" step="1" class="form-control">
-            </div>
-            <div class="form-group">
-                <div class="form-check form-check-inline">
-                    <input type="radio" id="allAtOnce" name="animationGroup" class="form-check-input">
-                    <label for="allAtOnce" class="form-check-label">All at once</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="radio" id="animated" name="animationGroup" checked="" class="form-check-input">
-                    <label for="animated" class="form-check-label">Slow animation</label>
-                </div>
-            </div>
-            <hr>
-            <canvas id="canvas" width="900" height="600" oncontextmenu="return false;" class="border"></canvas>
-            <div class="form-group mt-3">
-                <div class="form-check">
-                    <input type="radio" id="bernulli" name="processGroup" class="form-check-input">
-                    <label for="bernulli" class="form-check-label">Bernulli [uses rate of occurrences λ]</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" id="randomWalk" name="processGroup" checked="" class="form-check-input">
-                    <label for="randomWalk" class="form-check-label">Random Walk (RW) [µ=0, uses σ] Absolute Frequency</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" id="relativeFrequency" name="processGroup" class="form-check-input">
-                    <label for="relativeFrequency" class="form-check-label">Relative Frequency {interval [-1,1]}</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" id="poisson" name="processGroup" class="form-check-input">
-                    <label for="poisson" class="form-check-label">Poisson [uses rate of occurrences λ/N]</label>
-                </div>
-            </div>
-            <button id="recomputeBtn" type="button" class="btn btn-primary mt-3">Generate new</button>
+        canvas {
+            background-color: black;
+            border: 1px solid blue;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Euler–Maruyama</h1>
+        <div class="form-group">
+            <label for="timesInput"># times:</label>
+            <input type="number" id="timesInput" value="100" min="10" max="10000" step="10" class="form-control">
         </div>
-    <script src="\assets\js\MyRndUtilities.js"></script>
-    <script src="\assets\js\MyChartUtilities.js"></script>
-    <script src="\assets\js\My2dUtilities.js"></script>
-    <script src="\assets\js\MyDistributionUtilities.js"></script>
-    <script src="\assets\js\Rettangolo.js"></script>
+        <div class="form-group">
+            <label for="pathsInput"># sample paths:</label>
+            <input type="number" id="pathsInput" value="50" min="10" max="10000" step="10" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="muInput">μ (drift):</label>
+            <input type="number" id="muInput" value="0" min="-20" max="20" step=".1" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="sigmaInput">σ (diffusion):</label>
+            <input type="number" id="sigmaInput" value="1" min="0.1" max="1000" step=".1" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="lambdaInput">λ:</label>
+            <input type="number" id="lambdaInput" value="50" min="1" max="1000" step="1" class="form-control">
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-inline">
+                <input type="radio" id="allAtOnce" name="animationGroup" class="form-check-input">
+                <label for="allAtOnce" class="form-check-label">All at once</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" id="animated" name="animationGroup" checked class="form-check-input">
+                <label for="animated" class="form-check-label">Slow animation</label>
+            </div>
+        </div>
+        <hr>
+        <canvas id="canvas" width="900" height="600" oncontextmenu="return false;" class="border"></canvas>
+        <div class="form-group mt-3">
+            <div class="form-check">
+                <input type="radio" id="bernulli" name="processGroup" class="form-check-input">
+                <label for="bernulli" class="form-check-label">Bernulli [uses rate of occurrences λ]</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" id="randomWalk" name="processGroup" checked class="form-check-input">
+                <label for="randomWalk" class="form-check-label">Random Walk (RW) [µ=0, uses σ] Absolute Frequency</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" id="relativeFrequency" name="processGroup" class="form-check-input">
+                <label for="relativeFrequency" class="form-check-label">Relative Frequency {interval [-1,1]}</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" id="poisson" name="processGroup" class="form-check-input">
+                <label for="poisson" class="form-check-label">Poisson [uses rate of occurrences λ/N]</label>
+            </div>
+        </div>
+        <button id="recomputeBtn" type="button" class="btn btn-primary mt-3">Generate new</button>
+    </div>
+    <script src="/assets/js/MyRndUtilities.js"></script>
+    <script src="/assets/js/MyChartUtilities.js"></script>
+    <script src="/assets/js/My2dUtilities.js"></script>
+    <script src="/assets/js/MyDistributionUtilities.js"></script>
+    <script src="/assets/js/Rettangolo.js"></script>
     <script>
         "use strict";
 
