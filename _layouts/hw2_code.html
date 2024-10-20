@@ -345,8 +345,8 @@
 
                 const breachDatasets = getDataset(hackers.length, servers.length, p);
 
-                distributionCounts, intervals = getDistribution(servers.length, breachDatasets);
-                distributionCountsStep, intervalsStep = getDistribution(step, breachDatasets);
+                let distributionCounts, intervals = getDistribution(servers.length, breachDatasets);
+                let distributionCountsStep, intervalsStep = getDistribution(step, breachDatasets);
                 plotFlatLineChart(servers, hackers, breachDatasets);
                 plotHistogram(intervals, distributionCounts, 'histogram');
                 plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
