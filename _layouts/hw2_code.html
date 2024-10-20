@@ -82,11 +82,11 @@
     <div class="container">
         <h1>Euler–Maruyama</h1>
         <div class="form-group">
-            <label for="timesInput"># times:</label>
+            <label for="timesInput">Servers</label>
             <input type="number" id="timesInput" value="100" min="10" max="10000" step="10" class="form-control">
         </div>
         <div class="form-group">
-            <label for="pathsInput"># sample paths:</label>
+            <label for="pathsInput">Hackers</label>
             <input type="number" id="pathsInput" value="50" min="10" max="10000" step="10" class="form-control">
         </div>
         <div class="form-group">
@@ -114,10 +114,12 @@
         <hr>
         <canvas id="canvas" width="900" height="600" oncontextmenu="return false;" class="border"></canvas>
         <div class="form-group mt-3">
+            <!--
             <div class="form-check">
                 <input type="radio" id="bernulli" name="processGroup" class="form-check-input">
                 <label for="bernulli" class="form-check-label">Bernulli [uses rate of occurrences λ]</label>
             </div>
+            -->
             <div class="form-check">
                 <input type="radio" id="randomWalk" name="processGroup" checked class="form-check-input">
                 <label for="randomWalk" class="form-check-label">Random Walk (RW) [µ=0, uses σ] Absolute Frequency</label>
@@ -126,10 +128,12 @@
                 <input type="radio" id="relativeFrequency" name="processGroup" class="form-check-input">
                 <label for="relativeFrequency" class="form-check-label">Relative Frequency {interval [-1,1]}</label>
             </div>
+            <!--
             <div class="form-check">
                 <input type="radio" id="poisson" name="processGroup" class="form-check-input">
                 <label for="poisson" class="form-check-label">Poisson [uses rate of occurrences λ/N]</label>
             </div>
+            -->
         </div>
         <button id="recomputeBtn" type="button" class="btn btn-primary mt-3">Generate new</button>
         <div style="text-align: center; margin-top: 20px;">
@@ -162,9 +166,9 @@
             const animated = document.getElementById("animated");
 
             const randomWalk = document.getElementById("randomWalk");
-            const poisson = document.getElementById("poisson");
+            //const poisson = document.getElementById("poisson");
             const relativeFrequency = document.getElementById("relativeFrequency");
-            const bernulli = document.getElementById("bernulli");
+            //const bernulli = document.getElementById("bernulli");
 
             const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
@@ -212,7 +216,7 @@
                 animate = animated.checked;
 
                 const sigmaRange = 4;
-
+/*
                 if (randomWalk.checked) {
                     setProcess("Random Walk (sum of scaled Rademacher rv's = Σ σ R(-1,1), ±1 jumps, p=.5, mean=0, var = σ² t, std = σ √t", VariateType.RW, false, -sigmaRange * sigma * Math.sqrt(n), sigmaRange * sigma * Math.sqrt(n), () => MyRndUtilities.RademacherVariate(), (sum) => (sigma * sum));
                 } else if (bernulli.checked) {
@@ -223,7 +227,7 @@
                 else if (poisson.checked) {
                     setProcess("Poisson with rate λ/N ( ≈ Σ Be(λ/N), mean=λ, var=λ )", VariateType.POISSON, false, 0, lambda * 1.5, () => MyRndUtilities.bernoulliVariate(lambda / n), (sum) => (sum));
                 }
-
+*/
                 range = maxView - minView;
                 intervalSize = range / numClasses;
 
