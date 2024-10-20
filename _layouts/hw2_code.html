@@ -137,11 +137,9 @@
                     console.log(datasets)
                 }
                 let data = breachDatasets.map(dataset => ({
-                            ...dataset,
-                            pointRadius: 0,
+                    ...dataset,
+                    pointRadius: 0,
                 }))
-
-                
 
                 flatLineChart = new Chart(ctx, {
                     type: 'line',
