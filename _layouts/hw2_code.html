@@ -246,8 +246,6 @@
                 if (histogramStepChart !== null) {
                     histogramStepChart.destroy();
                 }
-                console.log()
-                console.log(penetrationCounts)
                 return new Chart(document.getElementById(chartId).getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -307,7 +305,6 @@
             }
             function getDataset(hackers, servers, p, randomWalk) {
                 let dataset = [];
-                console.log("randomwalk", randomWalk.checked)
                 for (let i = 1; i <= hackers; i++) {
                     let hackerInfo = [];
                     let top = 0;
@@ -356,18 +353,13 @@
                 const intervalCount = Math.ceil(n / intervalSize);
 
                 const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
-                console.log(intervals);
                 const distributionCounts = Array(intervalCount).fill(0);
-                console.log(intervalCount);
-                console.log(distributionCounts);
                 datasets.forEach(dataset => {
                     const index = Math.floor(dataset.data.at(n-1) / intervalSize);
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
                 });
 
                 let stats = calculateStats(distributionCounts)
-                console.log("distrib",distributionCounts);
-                console.log(intervals);
                 while (distributionCounts[0] == 0) {
                     distributionCounts.shift();
                     intervals.shift();
@@ -376,8 +368,6 @@
                     distributionCounts.pop();
                     intervals.pop();
                 }
-                console.log("distrib",distributionCounts);
-                console.log(intervals);
                 return {"dis" : distributionCounts, "inter" : intervals, "stats": stats};
             }
             function generateGraphs() {
@@ -419,8 +409,6 @@
                 let intervalsStep = datadisStep["inter"];
                 let statsStep = datadisStep["stats"];
                 
-                console.log("dis", distributionCounts, intervals);
-                console.log("step", distributionCountsStep, intervalsStep);
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 histogramChart = plotHistogram(intervals, distributionCounts, 'histogram');
                 histogramStepChart = plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
