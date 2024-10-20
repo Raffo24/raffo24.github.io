@@ -206,10 +206,11 @@
                             afterDraw: (chart) => {
                                 const ctx = chart.ctx;
                                 const xAxis = chart.scales.x;
+                                const xPos = xAxis.getPixelForValue(stepx);
                                 ctx.save();
                                 ctx.beginPath();
-                                ctx.moveTo(stepx, chart.chartArea.top);
-                                ctx.lineTo(stepx, chart.chartArea.bottom);
+                                ctx.moveTo(xPos, chart.chartArea.top);
+                                ctx.lineTo(xPos, chart.chartArea.bottom);
                                 ctx.lineWidth = 2;
                                 ctx.strokeStyle = 'red';
                                 ctx.stroke();
