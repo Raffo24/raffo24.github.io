@@ -97,11 +97,13 @@
             <div class="graph">
                 <h2>Frequency Distribution at the step x</h2>
                 <canvas id="histogramStep"></canvas>
+                <h4 id="statsStep"></h4>
             </div><br><br>
             <div class="graph">
                 <br><br>
                 <h2>Frequency Distribution at the end</h2>
                 <canvas id="histogram"></canvas>
+                <h4 id="finalStats"></h4>
             </div>
         </div>
 
@@ -283,6 +285,13 @@
                 return dataset;
             }
 
+            function calculateStats(counts) {
+                const n = counts.length;
+                const mean = counts.reduce((sum, count) => sum + count, 0) / n;
+                const variance = counts.reduce((sum, count) => sum + Math.pow(count - mean, 2), 0) / n;
+                return { mean, variance };
+            }
+
             function getDistribution(n, datasets){
                 intervalSize = 1;
                 if (n >= 10) {
@@ -309,6 +318,8 @@
                     if (index >= 0 && index < intervalCount) { distributionCounts[index]++; }
                 });
 
+                let stats = calculateStats(distributionCounts)
+
                 while (distributionCounts[0] === 0) {
                     distributionCounts.shift();
                     intervals.shift();
@@ -317,7 +328,7 @@
                     distributionCounts.pop();
                     intervals.pop();
                 }
-                return distributionCounts, intervals;
+                return distributionCounts, intervals, stats;
             }
             function generateGraphs() {
                 const n_servers = parseInt(document.getElementById('n').value);
@@ -348,15 +359,15 @@
                         dataset.data = dataset.data.map((value, step) => value / step )
                     })
                 }
-                let distributionCounts, intervals = getDistribution(servers.length, datasets);
-                let distributionCountsStep, intervalsStep = getDistribution(step, datasets);
+                let distributionCounts, intervals, stats = getDistribution(servers.length, datasets);
+                let distributionCountsStep, intervalsStep, statsStep = getDistribution(step, datasets);
                 plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 plotHistogram(intervals, distributionCounts, 'histogram');
                 plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
                 // add to document the two values: absolute frequency e relative frequency
-                
-
+                document.getElementById("statsStep").textContent = `Final Mean: ${statsStep.mean.toFixed(2)}, Final Variance: ${statsStep.variance.toFixed(2)}`;
+                document.getElementById("finalStats").textContent = `Final Mean: ${stats.mean.toFixed(2)}, Final Variance: ${stats.variance.toFixed(2)}`;
             }
 
         </script>
