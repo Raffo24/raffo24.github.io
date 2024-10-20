@@ -89,24 +89,10 @@
             <label for="pathsInput">Hackers</label>
             <input type="number" id="pathsInput" value="50" min="10" max="10000" step="10" class="form-control">
         </div>
-        <!--
         <div class="form-group">
-            <label for="muInput">μ (drift):</label>
-            <input type="number" id="muInput" value="0" min="-20" max="20" step=".1" class="form-control">
+            <label for="probability">p (probability)</label>
+            <input type="number" id="probability" value="0.5" min="0" max="11" step="0.01" class="form-control">
         </div>
-        -->
-        <!--
-        <div class="form-group">
-            <label for="sigmaInput">σ (diffusion):</label>
-            <input type="number" id="sigmaInput" value="1" min="0.1" max="1000" step=".1" class="form-control">
-        </div>
-        -->
-        <!--
-        <div class="form-group">
-            <label for="lambdaInput">λ</label>
-            <input type="number" id="lambdaInput" value="50" min="1" max="1000" step="1" class="form-control">
-        </div>
-        -->
         <div class="form-group">
             <div class="form-check form-check-inline">
                 <input type="radio" id="allAtOnce" name="animationGroup" class="form-check-input">
@@ -120,26 +106,18 @@
         <hr>
         <canvas id="canvas" width="900" height="600" oncontextmenu="return false;" class="border"></canvas>
         <div class="form-group mt-3">
-            <!--
+            <select id="frequencyType" name="frequencyType" class="form-control">
+                <option value="absoluteFrequency">Absolute Frequency</option>
+                <option value="relativeFrequency">Relative Frequency {interval [-1,1]}</option>
+            </select>
             <div class="form-check">
                 <input type="radio" id="bernulli" name="processGroup" class="form-check-input">
                 <label for="bernulli" class="form-check-label">Bernulli [uses rate of occurrences λ]</label>
             </div>
-            -->
             <div class="form-check">
                 <input type="radio" id="randomWalk" name="processGroup" checked class="form-check-input">
                 <label for="randomWalk" class="form-check-label">Random Walk (RW) [µ=0, uses σ] Absolute Frequency</label>
             </div>
-            <div class="form-check">
-                <input type="radio" id="relativeFrequency" name="processGroup" class="form-check-input">
-                <label for="relativeFrequency" class="form-check-label">Relative Frequency {interval [-1,1]}</label>
-            </div>
-            <!--
-            <div class="form-check">
-                <input type="radio" id="poisson" name="processGroup" class="form-check-input">
-                <label for="poisson" class="form-check-label">Poisson [uses rate of occurrences λ/N]</label>
-            </div>
-            -->
         </div>
         <button id="recomputeBtn" type="button" class="btn btn-primary mt-3">Generate new</button>
         <div style="text-align: center; margin-top: 20px;">
@@ -157,29 +135,24 @@
         document.addEventListener("DOMContentLoaded", function() {
             const VariateType = Object.freeze({
                 RW: Symbol("randomWalk"),
-                POISSON: Symbol("Poisson"),
                 RELATIVE_FREQUENCY: Symbol("relativeFrequency"),
                 BERNULLI: Symbol("bernoulli"),
             });
 
             const recomputeBtn = document.getElementById("recomputeBtn");
-            const muInput = document.getElementById("muInput");
-            const sigmaInput = document.getElementById("sigmaInput");
-            const lambdaInput = document.getElementById("lambdaInput");
             const timesInput = document.getElementById("timesInput");
             const pathsInput = document.getElementById("pathsInput");
 
             const animated = document.getElementById("animated");
 
             const randomWalk = document.getElementById("randomWalk");
-            //const poisson = document.getElementById("poisson");
             const relativeFrequency = document.getElementById("relativeFrequency");
-            //const bernulli = document.getElementById("bernulli");
+            const bernulli = document.getElementById("bernulli");
 
             const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
 
-            let mu, sigma, lambda, n, numPaths, paths, randomJump, variate, scalingLimit, processType, processDesc, minView, maxView, range, intervalSize, numClasses, xOrigin, yOrigin, histTimeT, histTimeN, avgLast, ssLast, intervalsT, intervalsN, timer, animate, currentPath;
+            let lambda, n, numPaths, paths, randomJump, variate, scalingLimit, processType, processDesc, minView, maxView, range, intervalSize, numClasses, xOrigin, yOrigin, histTimeT, histTimeN, avgLast, ssLast, intervalsT, intervalsN, timer, animate, currentPath;
 
             const chartRect = new Rettangolo(20, 30, canvas.width - 200, canvas.height - 30 - 40);
 
@@ -210,9 +183,6 @@
             }
 
             function getUserChoices() {
-                mu = Number(muInput.value);
-                sigma = Number(sigmaInput.value);
-                lambda = Number(lambdaInput.value);
                 n = Math.round(Number(timesInput.value));
                 numPaths = Number(pathsInput.value);
                 numClasses = Math.max(100, numPaths / 60);
@@ -221,8 +191,7 @@
                 histTimeN = n;
                 animate = animated.checked;
 
-                const sigmaRange = 4;
-/*
+
                 if (randomWalk.checked) {
                     setProcess("Random Walk (sum of scaled Rademacher rv's = Σ σ R(-1,1), ±1 jumps, p=.5, mean=0, var = σ² t, std = σ √t", VariateType.RW, false, -sigmaRange * sigma * Math.sqrt(n), sigmaRange * sigma * Math.sqrt(n), () => MyRndUtilities.RademacherVariate(), (sum) => (sigma * sum));
                 } else if (bernulli.checked) {
@@ -230,10 +199,7 @@
                 } else if (relativeFrequency.checked) {
                     setProcess("Relative Frequency (f = rel freq = count/t ( Σ σ R(-1,1)), mean = p, var = √p(1-p)/t → 0)", VariateType.RELATIVE_FREQUENCY, false, -1, 1, () => (Math.random() <= lambda/100) ? -1 : 1, (sum,t) => (sum / t));
                 }
-                else if (poisson.checked) {
-                    setProcess("Poisson with rate λ/N ( ≈ Σ Be(λ/N), mean=λ, var=λ )", VariateType.POISSON, false, 0, lambda * 1.5, () => MyRndUtilities.bernoulliVariate(lambda / n), (sum) => (sum));
-                }
-*/
+
                 range = maxView - minView;
                 intervalSize = range / numClasses;
 
