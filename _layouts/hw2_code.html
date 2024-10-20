@@ -126,16 +126,7 @@
                     flatLineChart.destroy();
                 }
                 const ctx = document.getElementById('flat-line-graph').getContext('2d');
-                let frequencyType = document.getElementById("frequencyType").value;
                 
-
-                console.log(datasets)
-                if (frequencyType === 'absolute'){
-                    datasets.map((dataset) => {
-                        dataset.data = dataset.data.map((value, step) => value / step )
-                    })
-                    console.log(datasets)
-                }
                 let data = datasets.map(dataset => ({
                     ...dataset,
                     pointRadius: 0,
@@ -349,16 +340,22 @@
                 const hackers = [];
                 for (let i = 1; i <= n_hackers; i++) { hackers.push(i); }
 
-                const breachDatasets = getDataset(hackers.length, servers.length, p, randomWalk);
-
-                let distributionCounts, intervals = getDistribution(servers.length, breachDatasets);
-                let distributionCountsStep, intervalsStep = getDistribution(step, breachDatasets);
-                plotFlatLineChart(servers, hackers, breachDatasets, randomWalk);
+                const datasets = getDataset(hackers.length, servers.length, p, randomWalk);
+                let frequencyType = document.getElementById("frequencyType").value;
+                
+                if (frequencyType === 'relative'){
+                    datasets.map((dataset) => {
+                        dataset.data = dataset.data.map((value, step) => value / step )
+                    })
+                }
+                let distributionCounts, intervals = getDistribution(servers.length, datasets);
+                let distributionCountsStep, intervalsStep = getDistribution(step, datasets);
+                plotFlatLineChart(servers, hackers, datasets, randomWalk);
                 plotHistogram(intervals, distributionCounts, 'histogram');
                 plotHistogram(intervalsStep, distributionCountsStep, 'histogramStep');
                 document.getElementById('charts').style.display = 'flex';
                 // add to document the two values: absolute frequency e relative frequency
-                // calcola
+                
 
             }
 
