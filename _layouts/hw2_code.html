@@ -324,6 +324,35 @@
                     distributionCounts.pop();
                     intervals.pop();
                 }
+<<<<<<< HEAD
+=======
+                return distributionCounts;
+            }
+            function generateGraphs() {
+                const n_servers = parseInt(document.getElementById('n').value);
+                const n_hackers = parseInt(document.getElementById('m').value);
+                const p = parseFloat(document.getElementById('p').value);
+                const step = parseInt(document.getElementById('step').value);
+                let frequencyType = document.getElementById("frequencyType").value;
+                // Validate input
+                if (n_servers < 2 || n_servers > 500 || n_hackers < 1 || n_hackers > 500 || p < 0 || p > 1) {
+                    alert('Please enter values in these intervals:\n- 2-500 for servers\n- 1-500 for hackers\n- 0-1 for probability.');
+                    return;
+                }
+                if (step >= n_servers){
+                    alert("Please enter value: x_step < n_servers");
+                    return;
+                }
+                const servers = [];
+                for (let i = 1; i <= n_servers; i++) { servers.push(i); }
+
+                const hackers = [];
+                for (let i = 1; i <= n_hackers; i++) { hackers.push(i); }
+
+                const breachDatasets = getDataset(hackers.length, servers.length, p);
+
+                distributionCounts = getDistribution(servers.length, breachDatasets)
+>>>>>>> parent of 14c0b60 (Update hw2_code.html)
 
                 plotFlatLineChart(servers, hackers, breachDatasets);
                 plotHistogram(intervals, distributionCounts);
