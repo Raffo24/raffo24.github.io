@@ -176,7 +176,7 @@
                     flatLineChart.destroy();
                 }
                 const ctx = document.getElementById('flat-line-graph').getContext('2d');
-                
+                const stepx = parseInt(document.getElementById('step').value);
                 let data = datasets.map(dataset => ({
                     ...dataset,
                     pointRadius: 0,
