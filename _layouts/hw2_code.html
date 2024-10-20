@@ -355,8 +355,11 @@
                     intervalSize = 8
                 }
                 const intervalCount = Math.ceil(n / intervalSize);
-
-                const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
+                if (intervalSize > 1){
+                    const intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
+                } else{
+                    const intervals = Array.from({ length: intervalCount }, (_, i) => `${i}`);
+                }
                 const distributionCounts = Array(intervalCount).fill(0);
                 datasets.forEach(dataset => {
                     const index = Math.floor(dataset.data.at(n-1) / intervalSize);
