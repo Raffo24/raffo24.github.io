@@ -355,7 +355,7 @@
                     intervalSize = 8
                 }
                 const intervalCount = Math.ceil(n / intervalSize);
-                const intervals = null;
+                let intervals = null;
                 if (intervalSize > 1){
                     intervals = Array.from({ length: intervalCount }, (_, i) => `${i * intervalSize}-${(i + 1) * intervalSize}`);
                 } else {
