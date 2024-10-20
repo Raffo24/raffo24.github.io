@@ -125,15 +125,19 @@
                     flatLineChart.destroy();
                 }
                 const ctx = document.getElementById('flat-line-graph').getContext('2d');
+                let frequencyType = document.getElementById("frequencyType").value;
+                
+                data = breachDatasets.map(dataset => ({
+                            ...dataset,
+                            pointRadius: 0,
+                        }))
+                console.log(data)
 
                 flatLineChart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: servers,
-                        datasets: breachDatasets.map(dataset => ({
-                            ...dataset,
-                            pointRadius: 0,
-                        })),
+                        datasets: ,
                     },
                     options: {
                         plugins: {
