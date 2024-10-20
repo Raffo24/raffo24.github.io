@@ -244,10 +244,6 @@
                         maintainAspectRatio: false
                     }
                 });
-                flatLineChart.options.animation.onComplete = () => {
-                    ctx.moveTo(flatLineChart.scales.x.getPixelForValue(servers[stepx]), chart.chartArea.top);
-                    ctx.lineTo(flatLineChart.scales.x.getPixelForValue(servers[stepx]), chart.chartArea.bottom);
-                }
             }
 
             function plotHistogram(intervals, penetrationCounts, chartId) {
